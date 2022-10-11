@@ -17,7 +17,7 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:letterSpacing=".1"
+            android:letterSpacing=".05"
             android:paddingBottom="30dp"
             android:text="Bluetooth"
             android:textColor="@color/primary_text"
@@ -29,13 +29,14 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/title"
             android:orientation="horizontal"
+            android:weightSum="10"
             android:paddingBottom="30dp">
 
             <RelativeLayout
                 android:id="@+id/turn_on_text_container"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="8">
+                android:layout_weight="8.5">
 
                 <TextView
 
@@ -52,17 +53,18 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/turn_on_text"
                     android:layout_marginTop="5dp"
-                    android:text="Currently visible to nearby Bluetooth devices"
                     android:textColor="@color/sec_text" />
 
 
             </RelativeLayout>
 
             <Switch
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:checked="true"
+                android:layout_gravity="end"
+                android:checked="false"
+                android:layout_weight="1.5"
+                android:id="@+id/switch_button"
                 android:shadowColor="@color/primary_text"
                 android:thumbTint="@color/primary_text"
                 android:trackTint="@color/primary_text"
@@ -86,42 +88,27 @@
                 android:textColor="@color/primary_text"
                 android:textSize="22sp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/paired_device_text"
+                android:textColor="@color/sec_text"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                android:textSize="12sp"
+                android:id="@+id/paired_device_info_text"
+                android:text="Turn on Bluetooth to see paired devices"
+
+                />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/paired_device_recycler_view"
                 android:layout_width="match_parent"
+
                 android:layout_height="wrap_content"
-                android:layout_below="@id/paired_device_text"
+                android:layout_below="@id/paired_device_info_text"
                 tools:itemCount="3"
                 tools:listitem="@layout/device_item_view" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/paired_device_recycler_view"
-                android:paddingTop="20dp">
-
-                <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_baseline_arrow_forward_ios_24" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="8"
-                    android:text="See all"
-                    android:textColor="@color/primary_text" />
-
-                <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_weight="1" />
-
-
-            </LinearLayout>
 
 
         </RelativeLayout>
@@ -136,7 +123,6 @@
             <RelativeLayout
                 android:id="@+id/available_device_title_container"
                 android:layout_width="match_parent"
-
                 android:layout_height="wrap_content">
 
                 <TextView
