@@ -3,7 +3,172 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
+    android:padding="20dp"
     tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <TextView
+
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing=".1"
+            android:paddingBottom="30dp"
+            android:text="Bluetooth"
+            android:textColor="@color/primary_text"
+            android:textSize="32sp" />
+
+        <LinearLayout
+            android:id="@+id/turn_on_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title"
+            android:orientation="horizontal"
+            android:paddingBottom="30dp">
+
+            <RelativeLayout
+                android:id="@+id/turn_on_text_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="8">
+
+                <TextView
+
+                    android:id="@+id/turn_on_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Turn on"
+                    android:textColor="@color/primary_text"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/turn_on_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/turn_on_text"
+                    android:layout_marginTop="5dp"
+                    android:text="Currently visible to nearby Bluetooth devices"
+                    android:textColor="@color/sec_text" />
+
+
+            </RelativeLayout>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:checked="true"
+                android:shadowColor="@color/primary_text"
+                android:thumbTint="@color/primary_text"
+                android:trackTint="@color/primary_text"
+                android:typeface="sans"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/paired_device_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/turn_on_container">
+
+            <TextView
+                android:id="@+id/paired_device_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:text="Paired devices"
+                android:textColor="@color/primary_text"
+                android:textSize="22sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/paired_device_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/paired_device_text"
+                tools:itemCount="3"
+                tools:listitem="@layout/device_item_view" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/paired_device_recycler_view"
+                android:paddingTop="20dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_baseline_arrow_forward_ios_24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="8"
+                    android:text="See all"
+                    android:textColor="@color/primary_text" />
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_weight="1" />
+
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/available_device_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/paired_device_container"
+            android:paddingTop="30dp">
+
+            <RelativeLayout
+                android:id="@+id/available_device_title_container"
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/available_device_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Available devices"
+                    android:textColor="@color/primary_text"
+                    android:textSize="22sp" />
+
+                <ProgressBar
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true" />
+
+
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/available_device_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/available_device_title_container"
+                android:paddingTop="20dp"
+                tools:itemCount="3"
+                tools:listitem="@layout/device_item_view" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
 
 
 </RelativeLayout>
