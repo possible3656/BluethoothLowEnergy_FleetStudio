@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "437668471592",
+    "project_id": "fleetstudio-fb96b",
+    "storage_bucket": "fleetstudio-fb96b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437668471592:android:b63abedaa4924bd030661d",
+        "android_client_info": {
+          "package_name": "com.example.bluethoothlowenergyfleetstudio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "437668471592-vkrq61nrnlfp7tjf5vr9i1ien9pkc9dg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBki4K337Rp-BgViT6DGWcCwS57rIfbN9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "437668471592-vkrq61nrnlfp7tjf5vr9i1ien9pkc9dg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

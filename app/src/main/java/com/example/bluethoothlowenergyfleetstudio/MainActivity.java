@@ -1,6 +1,10 @@
 package com.example.bluethoothlowenergyfleetstudio;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -11,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.util.Log;
@@ -20,17 +25,27 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bluethoothlowenergyfleetstudio.Adapters.DeviceItemAdapter;
+import com.example.bluethoothlowenergyfleetstudio.Utils.Constants;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements DeviceItemAdapter.OnItemClicked {
@@ -49,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements DeviceItemAdapter
 
     Set<BluetoothDevice> pairedDevices, availableDevices = new HashSet<>();
     ArrayList<BluetoothDevice> pairedDevicesArrayList, availableDevicesArrayList;
+
+    ArrayList<Map<String, Object>> deviceRawData = new ArrayList<>();
+    ArrayList<JSONObject> deviceRawDataInJson = new ArrayList<>();
 
     private static final String TAG = "MainActivity";
 
@@ -140,10 +158,73 @@ public class MainActivity extends AppCompatActivity implements DeviceItemAdapter
                 paired_device_adapter = new DeviceItemAdapter(pairedDevicesArrayList, this, true, MainActivity.this);
                 paired_device_recycler_view.setAdapter(paired_device_adapter);
                 paired_device_recycler_view.setLayoutManager(new LinearLayoutManager(this));
+                for (BluetoothDevice device : pairedDevicesArrayList) {
+                    addToRawData(device, true);
+                }
             }
         }
 
 
+    }
+
+
+    private void addToRawData(BluetoothDevice devices, boolean paired) {
+        Map<String, Object> map = new HashMap<>();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            map.put(Constants.DEVICE_NAME, devices.getName());
+            map.put(Constants.DEVICE_ADDRESS, devices.getAddress());
+            map.put(Constants.DEVICE_TYPE, devices.getBluetoothClass().getDeviceClass());
+            map.put(Constants.IS_DEVICE_PAIRED, paired);
+        }
+        deviceRawData.add(map);
+        JSONObject obj = new JSONObject(map);
+        deviceRawDataInJson.add(obj);
+        if (deviceRawData.size() >= pairedDevicesArrayList.size()) {
+            uploadData();
+        }
+    }
+
+    private void uploadData() {
+
+        Log.d(TAG, "uploadData: " + deviceRawData);
+        Log.d(TAG, "uploadData: " + deviceRawDataInJson);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map map = new HashMap<>();
+        map.put(Constants.BLUETOOTH_DEVICE,deviceRawData);
+
+        db.collection(Constants.BLUETOOTH_DEVICE).document(Constants.BLUETOOTH_DEVICE)
+                .set(map)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d(TAG, "onSuccess: updated data to server");
+                    sendNotification("Success","Bluetooth device data has been updated to server");
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, "onFailure: " + e.getMessage());
+                    sendNotification("Failed","Error occurred during upload.");
+                });
+
+    }
+
+    private void sendNotification(String title, String body) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"2" )
+                .setSmallIcon(R.drawable.ic_baseline_bluetooth_24)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name ="bt";
+            String description = "bt_notification";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("2", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(2, builder.build());
     }
 
     private void findAvailableDevices() {
@@ -165,12 +246,15 @@ public class MainActivity extends AppCompatActivity implements DeviceItemAdapter
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     if (device.getName() != null && !pairedDevicesArrayList.contains(device)) {
                         availableDevicesArrayList.add(device);
-
                     }
 
                     available_device_adapter = new DeviceItemAdapter(availableDevicesArrayList, MainActivity.this, false, MainActivity.this);
                     available_device_recycler_view.setAdapter(available_device_adapter);
                     available_device_recycler_view.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+                    for (BluetoothDevice devices : availableDevicesArrayList) {
+                        addToRawData(devices, false);
+                    }
                 }
             }
         }
@@ -245,21 +329,18 @@ public class MainActivity extends AppCompatActivity implements DeviceItemAdapter
             //pair to it
 
             BluetoothDevice device = availableDevicesArrayList.get(position);
-            if(!pairedDevicesArrayList.contains(device)){
+            if (!pairedDevicesArrayList.contains(device)) {
                 Toast.makeText(this, "pairing...", Toast.LENGTH_SHORT).show();
                 device.createBond();
                 pairedDevicesArrayList.add(device);
                 paired_device_adapter.notifyDataSetChanged();
                 availableDevicesArrayList.remove(device);
                 available_device_adapter.notifyDataSetChanged();
-            }else{
+            } else {
                 availableDevicesArrayList.remove(device);
                 available_device_adapter.notifyDataSetChanged();
                 Toast.makeText(this, "This device is already paired.", Toast.LENGTH_SHORT).show();
-
-
             }
-
         }
 
 

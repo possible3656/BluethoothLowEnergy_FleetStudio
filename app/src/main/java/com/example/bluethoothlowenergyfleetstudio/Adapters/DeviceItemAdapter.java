@@ -59,7 +59,7 @@ public class DeviceItemAdapter extends RecyclerView.Adapter<DeviceItemAdapter.Vi
             if (device.getBluetoothClass().getDeviceClass() == BluetoothClass.Device.AUDIO_VIDEO_WEARABLE_HEADSET) {
                 holder.imageView.setImageResource(R.drawable.ic_baseline_headphones_24);
             }
-            Log.d("deviceType", "onBindViewHolder: " + device.getBluetoothClass().getDeviceClass());
+//            Log.d("deviceType", "onBindViewHolder: " + device.getBluetoothClass().getDeviceClass());
         }
         holder.itemView.setOnClickListener(view -> onClick.onItemClick(position,isPairedDevice));
 
